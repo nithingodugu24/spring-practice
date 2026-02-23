@@ -37,23 +37,36 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = requestTokenHeader.split("Bearer ")[1];
-        String username = authUtil.getUsernameFromToken(token);
+        try {
+            String username = authUtil.getUsernameFromToken(token);
 
-        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            User user = userRepository.findByUsername(username).orElseThrow();
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                    new UsernamePasswordAuthenticationToken(
-                            user,
-                            null,
-                            null
-                    );
+            if (username != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                User user = userRepository.findByUsername(username)
+                        .orElseThrow();
 
-            log.debug("- >jwt filter setting security context, {}", request.getRequestURL());
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                user,
+                                null,
+                                user.getAuthorities()
+                        );
 
-            filterChain.doFilter(request, response);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                log.debug("JWT authentication set for user: {}", username);
+            }
+
+        } catch (Exception e) {
+            log.warn("Invalid JWT token: {}", e.getMessage());
+            SecurityContextHolder.clearContext();
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid or expired token");
+            return;
         }
+
 
         filterChain.doFilter(request, response);
 

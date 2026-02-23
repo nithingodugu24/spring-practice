@@ -1,0 +1,10 @@
+spring:
+  security.oauth2.client:
+    registration:
+      google:
+        client-id: testClientId
+        client-secret: testClientSecret
+
+      github:
+        client-id: testClient
+        client-secret: bawa

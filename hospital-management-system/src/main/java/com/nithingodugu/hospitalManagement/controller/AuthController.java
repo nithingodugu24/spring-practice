@@ -2,6 +2,7 @@ package com.nithingodugu.hospitalManagement.controller;
 
 import com.nithingodugu.hospitalManagement.dto.LoginRequestDto;
 import com.nithingodugu.hospitalManagement.dto.LoginResponseDto;
+import com.nithingodugu.hospitalManagement.dto.SignupRequestDto;
 import com.nithingodugu.hospitalManagement.dto.SignupResponseDto;
 import com.nithingodugu.hospitalManagement.security.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<SignupResponseDto> signup(@RequestBody LoginRequestDto singupRequestDto){
+    public ResponseEntity<SignupResponseDto> signup(@RequestBody SignupRequestDto singupRequestDto){
         return ResponseEntity.ok(authService.signup(singupRequestDto));
     }
 
